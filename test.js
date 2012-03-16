@@ -1,11 +1,12 @@
 var multiRedis = require('./lib/multi_redis.js');
 var redis = multiRedis.createClient({
-	host : [ "127.0.0.1", "127.0.0.1"],
-	port : [1239, 1240],
+  server : ['127.0.0.1:1239', '127.0.0.1:1240'],
+  //or use these:
+  // host : [ "127.0.0.1", "127.0.0.1"],  
+  // port : [1239, 1240],
 	debug : true,
 	speedFirst : true
 });
-
 
 
 //redis.auth("edp", function(err) {
@@ -25,6 +26,7 @@ redis.set("abc", 444, function(err, ok){
               setTimeout(function(){
                 redis.get("abc", function(err, data){
                   console.log("get after 2s: %d", data);
+                  redis.end();
                 })
               }, 2000);
             })
@@ -34,12 +36,3 @@ redis.set("abc", 444, function(err, ok){
     })
   })
 })
-// var redis = require('redis');
-// var client = redis.createClient(1239);
-// client.on('connect', function(){
-//   console.log('connect')
-// })
-// client.on('error',function(){});
-// client.auth('edp');
-// client.set("123", 123);
-// client.get("123", function(){})

@@ -10,6 +10,9 @@
 #### 使用方法
   参照```test.js```文件    
 
+#### 依赖   
+node-redis: ```npm install redis```   
+
 #### TODO
  * 更多方法和事件支持
  * 有待详细测试   
