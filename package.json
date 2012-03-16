@@ -1,0 +1,17 @@
+{
+  "name" : "multi-redis",
+  "description" : "Manage multi redis server",
+  "version" : "1.0.0",
+  "author" : "dead_horse <heyiyu.pt@taobao.com>",
+  "main" : "./index.js",
+  "dependencies" : {"redis" : ">= 0.7.1"},
+  "devDependencies": { 
+  	"mocha" : ">= 0.9.0",
+  	"should" : ">= 0.4.2"
+  },
+  "scripts" : {
+  	"test" : "make test"
+  },
+  "keywords" : ["redis", "multi"],
+  "license" : "MIT"
+}
