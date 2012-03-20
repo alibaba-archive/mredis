@@ -82,7 +82,7 @@ describe('functional test', function() {
     it('should end all the servers', function(done) {
       var num = options.port.length;
       setTimeout(function() {
-        client.clients.should.have.length(0);
+        client.alive.should.equal(0);
         done();
       }, 200)
       client.end();

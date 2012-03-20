@@ -73,7 +73,21 @@ describe('multi redis statbility test', function() {
         err.message.should.equal('All servers are down.');
         done();
       })
-      client.clients[0].emit('end');
+      console.log(client.alive);
+      client.clients[0]===null ? client.clients[1].emit('end') : client.clients[0].emit('end');
+    })
+  })
+
+  describe('#all down set&get', function(){
+    it('set method should get an error', function(done){
+      client.set('down', '123', function(err) {
+        err.message.should.equal('All servers are down.');
+        client.get('down', function(err, data){
+          err.message.should.equal('All servers are down.');
+          (!data).should.be.ok;
+          done();
+        })
+      })
     })
   })
 })
