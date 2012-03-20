@@ -1,6 +1,6 @@
 var multiRedis = require('./lib/multi_redis.js');
 var redis = multiRedis.createClient({
-  server : ['127.0.0.1:1239', '127.0.0.1:1240'],
+  server : ['127.0.0.1:1240', '127.0.0.1:1239'],
   //or use these:
   // host : [ "127.0.0.1", "127.0.0.1"],  
   // port : [1239, 1240],
@@ -8,9 +8,9 @@ var redis = multiRedis.createClient({
 	speedFirst : true
 });
 
+// redis.auth("edp", function(err) {
+// });
 
-//redis.auth("edp", function(err) {
-//});
 redis.set("abc", 444, function(err, ok){
 	console.log(err, ok);
   redis.get("abc", function(err, data) {
