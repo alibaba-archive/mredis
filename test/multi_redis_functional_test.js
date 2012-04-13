@@ -1,3 +1,4 @@
+require('./helper/ensure_require');
 var multiRedis = require('../lib/multi_redis');
 
 /**

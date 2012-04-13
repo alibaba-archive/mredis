@@ -6,4 +6,12 @@ test:
 	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
 		--reporter $(REPORTER) --timeout $(TESTTIMEOUT) $(TEST)
 
-.PHONY: test
+test-cov:
+	@JSCOV=1 NODE_ENV=test ./node_modules/mocha/bin/mocha \
+		--reporter html-cov --timeout $(TESTTIMEOUT) $(TEST) > coverage.html
+
+clean:
+	@rm -rf *-cov
+	@rm -f coverage.html
+
+.PHONY: test test-cov clean
