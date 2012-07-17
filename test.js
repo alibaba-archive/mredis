@@ -19,7 +19,7 @@ redis.on("end", function(client){
 })
 
 redis.on("connect", function(client){
-  console.log("client %s:%d disconnect!!!!", client.host, client.port);
+  console.log("client %s:%d connected!!!!", client.host, client.port);
 })
 redis.set("abc", 444, function(err, ok){
 	console.log('set ', err, ok);
