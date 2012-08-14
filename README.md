@@ -1,22 +1,46 @@
 ### Muilt Redis  
-开启多redis server
+Manger several redis server.
 
-#### 实现功能   
- * 绑定多个redis server   
- * 常用的```get```,```set```,```del```,```exist```等方法支持   
- * ```connect```, ```end```, ```error```事件支持   
- * 多写单读，可以通过```options.speedFirst```开启优先读取响应时间短的server，否则轮询读取   
+#### Usage 
+```  
+var mredis = require('mredis');
+//init
+var redis = medis.createClient({
+  server : ['127.0.0.1:1240', '127.0.0.1:1239'], //redis server addresses
+  debug : false,     //debug info, default false
+  speedFirst : true  //choose the fastest server to read. default fase, polling all the servers.
+}); 
 
-#### 使用方法
-  参照```test.js```文件  
-  
-#### 安装   
-```npm install mredis```   
-如果希望在```express```或者```connect```上使用，请安装```connect-redis```的```mredis```版本:```npm install connect-mredis```，在```express```中初始化的时候需要换成```mredis```的参数。
+//then use it just like use redis.
+redis.auth("edp", function(err) {});
+redis.on("error", function(err){
+  console.log("find error: ", err.message);
+});
+redis.on("end", function(client){
+  console.log("client %s:%d disconnect!!!!", client.host, client.port);
+});
+redis.on("connect", function(client){
+  console.log("client %s:%d connected!!!!", client.host, client.port);
+});
 
-#### 依赖   
-node-redis: ```npm install redis```   
+redis.set('hello', 'world', function(err, ok) {
+  redis.get('hello', function(err, data) {
+    console.log('data'); // world
+  });
+});
+```  
 
-#### TODO
- * 更多方法和事件支持
- * 有待详细测试   
+####Support method   
+```
+getCmds = ['get', 'mget', 'exists', 'getbit', 'hget', 'hmget', 'info', 'hgetall'];
+
+setCmds = ['set', 'setnx', 'setex', 'append', 'del', 'hset', 'hmset', 'auth', 'select', 'incr', 'decr', 'hincrby', 'expire'];
+```
+
+#### Install   
+`npm install mredis`   
+If want to use in `express` or `connect`, use this: `npm install connect-mredis`.
+
+#### dependence   
+node-redis
+

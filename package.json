@@ -1,7 +1,7 @@
 {
   "name" : "mredis",
   "description" : "Manage multi redis server",
-  "version" : "1.1.0",
+  "version" : "1.1.1",
   "author" : "dead_horse <heyiyu.pt@taobao.com>",
   "main" : "./index.js",
   "dependencies" : {"redis" : ">= 0.7.1"},
