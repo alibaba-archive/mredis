@@ -1,8 +1,8 @@
-### Muilt Redis  
+## Muilt Redis  
 Manger several redis server.
 
-#### Usage 
-```  
+### Usage 
+```js  
 var mredis = require('mredis');
 //init
 var redis = medis.createClient({
@@ -30,17 +30,17 @@ redis.set('hello', 'world', function(err, ok) {
 });
 ```  
 
-####Support method   
-```
+###Support method   
+```js
 getCmds = ['get', 'mget', 'exists', 'getbit', 'hget', 'hmget', 'info', 'hgetall'];
 
 setCmds = ['set', 'setnx', 'setex', 'append', 'del', 'hset', 'hmset', 'auth', 'select', 'incr', 'decr', 'hincrby', 'expire'];
 ```
 
-#### Install   
+### Install   
 `npm install mredis`   
 If want to use in `express` or `connect`, use this: `npm install connect-mredis`.
 
-#### dependence   
-node-redis
+### dependence   
+`node-redis`
 

@@ -23,7 +23,6 @@ describe('functional test', function() {
     it('should set ok', function(done){
       client.set('test', 'mytest', function(err, ok) {
         (!err).should.be.ok;
-        console.log(ok);
         ok.should.equal('OK');
         done();
       });
@@ -52,13 +51,12 @@ describe('functional test', function() {
       client.del('test', function(err, data){
         client.get('test', function(err, data) {
           (!err).should.be.ok;
-          console.log(err, data);
           (!data).should.be.ok;
           client.get('test',function(err, data) {
             (!err).should.be.ok;
             (!data).should.be.ok;
             done();
-          })
+          });
         })
       })
     })

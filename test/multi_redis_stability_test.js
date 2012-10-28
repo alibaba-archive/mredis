@@ -1,6 +1,6 @@
 require('./helper/ensure_require');
 var multiRedis = require('../lib/multi_redis');
-
+var blackhole = require('netblackhole');
 /**
  * be sure you have a redis server
  */
@@ -9,19 +9,37 @@ var multiRedis = require('../lib/multi_redis');
 var client;
 var redis;
 var options = {
-	server : ['127.0.0.1:1239', '127.0.0.1:1240'],
+	server : ['127.0.0.1:1239', '127.0.0.1:1240', '127.0.0.1:1241'],
   debug : false,
   speedFirst : true,
-  pingInterval : 3000
+  pingInterval : 100
 }
 
+var _server;
 describe('multi redis statbility test', function() {
+  before(function() {
+    _server = blackhole.create(1241);
+  });
+
+  after(function() {
+    _server.close();
+  });
+
   describe('#createClient()', function(){
     it('should create redis client ok', function(done) {
       client = multiRedis.createClient(options);
-      client.clients.should.have.length(2);
+      client.clients.should.have.length(3);
       done();
-    })   
+    });   
+
+    it('should blackhole end by timeout', function(done) {
+      client.once('end', function(c) {
+        done();
+      });      
+      setTimeout(function() {
+        client.alive.should.equal(2);
+      }, 500);
+    });
   })
 
   describe('#one server down', function() {
@@ -43,7 +61,7 @@ describe('multi redis statbility test', function() {
     it('should work fine', function(done) {
       redis.emit('connect');
       setTimeout(function() {
-        client.clients.should.have.length(2);
+        client.alive.should.equal(2);
         client.set('test1', 'name');
         client.get('test1', function(err, data) {
           (!err).should.be.ok;
