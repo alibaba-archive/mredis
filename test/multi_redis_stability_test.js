@@ -21,8 +21,8 @@ var _server1;
 var _server2;
 describe('multi redis statbility test', function() {
   before(function() {
-    _server1 = interceptor.create('127.0.0.1:1239');
-    _server2 = interceptor.create('127.0.0.1:1240');
+    _server1 = interceptor.create('127.0.0.1:6379');
+    _server2 = interceptor.create('127.0.0.1:6379');
     _server1.listen(1241);
     _server2.listen(1242);
   });
@@ -117,8 +117,22 @@ describe('multi redis statbility test', function() {
     });
 
     it('should getCmd timeout', function(done) {
-      client.get('foo', function(err, data) {
+      var _getIndex = client._getIndex;
+      client._getIndex = function() {
+        return 0;
+      }
+      var _get = client.clients[0].get;
+      client.clients[0].get = function(id, cb) {
+        setTimeout(function() {
+          cb(new Error('mock error'));
+        }, 10);
+      }
+      var _client = client.clients[0];
+      client.get('foo', function(err) {
         err.message.should.equal('request timeout.');
+        client.alive.should.equal(2);
+        client.clients[0].get = _get;
+        client._getIndex = _getIndex;
         done();
       });
     });

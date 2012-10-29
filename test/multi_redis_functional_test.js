@@ -8,7 +8,7 @@ var redis = require('redis');
 var client;
 var options = {
   host : ['127.0.0.1', '127.0.0.1'],
-  port : [1239, 1240],
+  port : [6379, 6379],
   debug : false
 }
 describe('functional test', function() {
@@ -136,7 +136,7 @@ describe('functional test', function() {
     })
     it('should emit end', function(done) {
       client.on('end', function(client) {
-        client.port.should.equal(1239);
+        client.port.should.equal(6379);
         done();
       })
       client.clients[0].stream.emit('end', client.clients[0]);      
