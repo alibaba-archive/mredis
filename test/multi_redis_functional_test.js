@@ -21,20 +21,20 @@ describe('functional test', function() {
     it('should create redis client with string host', function() {
       var options = {
         host: '127.0.0.1',
-        port: 1239
+        port: 6379
       };
       multiRedis.createClient(options).clients.should.have.length(1);
     });
 
     it('should create redis client with string server', function() {
       var options = {
-        server: '127.0.0.1:1239'
+        server: '127.0.0.1:6379'
       };
       multiRedis.createClient(options).clients.should.have.length(1);
     });
 
     it('should create redis client with host and port', function() {
-      multiRedis.createClient(1239, '127.0.0.1').clients.should.have.length(1);
+      multiRedis.createClient(6379, '127.0.0.1').clients.should.have.length(1);
     });   
   })
 
@@ -155,7 +155,10 @@ describe('functional test', function() {
 
   describe('#_getAliveClient', function() {
     it('should response 1', function() {
+      var _clients = client.clients;
+      client.clients = [null, {}];
       client._getAliveClient().should.equal(1);
+      client.clients = _clients;
     });
 
     it('should response -1', function() {
