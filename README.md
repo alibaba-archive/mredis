@@ -1,4 +1,4 @@
-## Muilt Redis  
+## Muilt Redis[![Build Status](https://secure.travis-ci.org/dead-horse/mult_redis.png)](http://travis-ci.org/dead-horse/mult_redis)  
 Manger several redis server.
 
 ### Usage 
