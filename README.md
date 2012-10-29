@@ -8,7 +8,9 @@ var mredis = require('mredis');
 var redis = medis.createClient({
   server : ['127.0.0.1:1240', '127.0.0.1:1239'], //redis server addresses
   debug : false,     //debug info, default false
-  speedFirst : true  //choose the fastest server to read. default fase, polling all the servers.
+  speedFirst : true, //choose the fastest server to read. default fase, polling all the servers.
+  pingInterval: 3000,//the interval for ping. default 3000ms
+  reqTimeout: 3000   //request timeout. default 3000ms
 }); 
 
 //then use it just like use redis.
