@@ -1,5 +1,6 @@
 require('./helper/ensure_require');
 var multiRedis = require('../lib/multi_redis');
+var redis = require('redis');
 
 /**
  * be sure you have a redis server
@@ -12,11 +13,29 @@ var options = {
 }
 describe('functional test', function() {
   describe('#createClient()', function(){
-    it('should create redis client ok', function(done) {
+    it('should create redis client ok', function() {
       client = multiRedis.createClient(options);
       client.clients.should.have.length(2);
-      done();
-    })   
+    });
+
+    it('should create redis client with string host', function() {
+      var options = {
+        host: '127.0.0.1',
+        port: 1239
+      };
+      multiRedis.createClient(options).clients.should.have.length(1);
+    });
+
+    it('should create redis client with string server', function() {
+      var options = {
+        server: '127.0.0.1:1239'
+      };
+      multiRedis.createClient(options).clients.should.have.length(1);
+    });
+
+    it('should create redis client with host and port', function() {
+      multiRedis.createClient(1239, '127.0.0.1').clients.should.have.length(1);
+    });   
   })
 
   describe('#set()', function() {
@@ -44,6 +63,38 @@ describe('functional test', function() {
         done();
       })
     })
+    it('should get by alive client', function(done) {
+      var _getIndex = client._getIndex;
+      client._getIndex = function() {
+        return 100;
+      }
+      client.get('test', function(err, data) {
+        data.should.equal('mytest');
+        client._getIndex = _getIndex;
+        done();
+      });
+    });
+
+    it('should get an error', function(done) {
+      var _getIndex = client._getIndex;
+      client._getIndex = function() {
+        return 0;
+      }
+      var _get = client.clients[0].get;
+      client.clients[0].get = function(id, cb) {
+        process.nextTick(function() {
+          cb(new Error('mock error'));
+        });
+      }
+      var _client = client.clients[0];
+      client.get('test', function(err) {
+        err.message.should.equal('mock error');
+        client.alive.should.equal(2);
+        client.clients[0].get = _get;
+        client._getIndex = _getIndex;
+        done();
+      });
+    });
   })
 
   describe('#del()', function() {
@@ -59,7 +110,21 @@ describe('functional test', function() {
           });
         })
       })
-    })
+    });
+
+    it('should del error', function(done) {
+      var _del = client.clients[1].del;
+      client.clients[1].del = function(key, cb) {
+        process.nextTick(function() {
+          cb(new Error('mock error'));
+        });
+      }
+      client.del('test', function(err, data) {
+        err.message.should.equal('mock error');
+        client.clients[1].del = _del;
+        done();
+      });
+    });
   })
   describe('#onEvent', function() {
     it('should emit error', function(done) {
@@ -74,7 +139,7 @@ describe('functional test', function() {
         client.port.should.equal(1239);
         done();
       })
-      client.clients[0].emit('end', client.clients[0]);      
+      client.clients[0].stream.emit('end', client.clients[0]);      
     })
   })
   describe('#end()', function() {
@@ -86,6 +151,20 @@ describe('functional test', function() {
       }, 200)
       client.end();
     })
-  })
+  });
+
+  describe('#_getAliveClient', function() {
+    it('should response 1', function() {
+      client._getAliveClient().should.equal(1);
+    });
+
+    it('should response -1', function() {
+      var _clients = client.clients;
+      client.clients = [];
+      client._getAliveClient().should.equal(-1);
+      client.clients = _clients;
+    });
+  });
+
 
 })

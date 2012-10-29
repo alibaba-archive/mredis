@@ -1,6 +1,7 @@
+var should = require('should');
 require('./helper/ensure_require');
 var multiRedis = require('../lib/multi_redis');
-var blackhole = require('netblackhole');
+var interceptor = require('interceptor');
 /**
  * be sure you have a redis server
  */
@@ -9,104 +10,124 @@ var blackhole = require('netblackhole');
 var client;
 var redis;
 var options = {
-	server : ['127.0.0.1:1239', '127.0.0.1:1240', '127.0.0.1:1241'],
+	server : ['127.0.0.1:1241', '127.0.0.1:1242'],
   debug : false,
   speedFirst : true,
-  pingInterval : 100
+  pingInterval : 100,
+  reqTimeout: 100
 }
 
-var _server;
+var _server1;
+var _server2;
 describe('multi redis statbility test', function() {
   before(function() {
-    _server = blackhole.create(1241);
+    _server1 = interceptor.create('127.0.0.1:1239');
+    _server2 = interceptor.create('127.0.0.1:1240');
+    _server1.listen(1241);
+    _server2.listen(1242);
   });
 
   after(function() {
-    _server.close();
+    _server1.close();
+    _server2.close();
   });
 
   describe('#createClient()', function(){
     it('should create redis client ok', function(done) {
       client = multiRedis.createClient(options);
-      client.clients.should.have.length(3);
+      client.clients.should.have.length(2);
       done();
     });   
+  });
 
-    it('should blackhole end by timeout', function(done) {
+  describe('#block by off network', function() {
+    it('should end by off network', function(done) {
       client.once('end', function(c) {
-        done();
-      });      
-      setTimeout(function() {
-        client.alive.should.equal(2);
-      }, 500);
-    });
-  })
-
-  describe('#one server down', function() {
-    it('should ok when working server done', function(done) {
-      redis = client.clients[client._getIndex()];
-      redis.emit('end');
-      setTimeout(function() {
-        client.set('test', '123');
-        client.get('test', function(err, data) {
-          (!err).should.be.ok;
-          data.should.equal('123');
-          done();
-        })
-      }, 10);
-    })
-  })
-
-  describe('#reconnect', function() {
-    it('should work fine', function(done) {
-      redis.emit('connect');
-      setTimeout(function() {
-        client.alive.should.equal(2);
-        client.set('test1', 'name');
-        client.get('test1', function(err, data) {
-          (!err).should.be.ok;
-          data.should.equal('name');
-          done();
-        })
-      },10);
-    })
-  })
-
-  describe('#one server down', function() {
-    it('should work fine when sleeping server done', function(done) {
-      client.clients[client._getIndex()].emit('end');
-      setTimeout(function() {
-        client.set('test2', 'down');
-        client.get('test2', function(err, data) {
-          (!err).should.be.ok;
-          data.should.equal('down');
+        client.alive.should.equal(1);
+        client.del('foo');
+        client.set('foo', 'bar');
+        client.get('foo', function(err, data) {
+          data.should.equal('bar');
           done();
         });
-      }, 10);
-    })
-  })
+      });
+      _server1.block();
+    });
 
-  describe('#all server down', function() {
-    it('should get an error', function(done) {
-      client.on('error', function(err){
-        err.message.should.equal('All servers are down.');
-        done();
-      })
-      console.log(client.alive);
-      client.clients[0]===null ? client.clients[1].emit('end') : client.clients[0].emit('end');
-    })
-  })
-
-  describe('#all down set&get', function(){
-    it('set method should get an error', function(done){
-      client.set('down', '123', function(err) {
-        err.message.should.equal('All servers are down.');
-        client.get('down', function(err, data){
-          err.message.should.equal('All servers are down.');
-          (!data).should.be.ok;
+    it('should reconnect when network ok', function(done) {
+      client.once('connect', function() {
+        client.alive.should.equal(2);
+        client.del('foo');
+        client.set('foo', 'bar');
+        client.get('foo', function(err, data) {
+          data.should.equal('bar');
           done();
-        })
-      })
-    })
-  })
+        });
+      });
+      _server1.open();
+    });
+
+    it('should error of All server done', function(done) {
+      client.once('error', function(err) {
+        client.alive.should.equal(0);
+        err.message.should.equal('All servers are down.');
+        client.del('foo', function(err) {
+          err.message.should.equal('All servers are down.');
+          client.set('foo', 'bar', function(err, data) {
+            err.message.should.equal('All servers are down.');
+            client.get('foo', function(err, data) {
+              err.message.should.equal('All servers are down.');
+              done();
+            });
+          });
+        });
+      });
+      _server1.block();
+      _server2.block();
+    });
+
+    it('should reopen and get ok', function(done) {
+      client.once('connect', function() {
+        client.del('foo');
+        client.set('foo', 'bar');
+        client.get('foo', function(err, data) {
+          data.should.equal('bar');
+          client.once('connect', function() {
+            client.del('foo');
+            client.set('foo', 'bar');
+            client.get('foo', function(err, data) {
+              data.should.equal('bar');
+              done();
+            });
+          });
+          _server2.open();
+        });
+      });
+      _server1.open();
+    });
+  });
+
+  describe('#reqTimeout', function() {
+    before(function() {
+      client.reqTimeout = 0;
+      //console.log(client);
+    });
+    after(function() {
+      client.reqTimeout = 100;
+    });
+
+    it('should getCmd timeout', function(done) {
+      client.get('foo', function(err, data) {
+        err.message.should.equal('request timeout.');
+        done();
+      });
+    });
+
+    it('should setCmd timeout', function(done) {
+      client.set('foo', 'bar', function(err, data) {
+        err.message.should.equal('request timeout.');
+        done();
+      });
+    });
+  });
 })
