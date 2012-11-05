@@ -88,6 +88,7 @@ describe('functional test', function() {
       }
       var _client = client.clients[0];
       client.get('test', function(err) {
+        err.name.should.equal('MRedisError');
         err.message.should.equal('mock error');
         client.alive.should.equal(2);
         client.clients[0].get = _get;
@@ -116,10 +117,13 @@ describe('functional test', function() {
       var _del = client.clients[1].del;
       client.clients[1].del = function(key, cb) {
         process.nextTick(function() {
-          cb(new Error('mock error'));
+          var err = new Error('mock error');
+          err.name = 'MockError';
+          cb(err);
         });
       }
       client.del('test', function(err, data) {
+        err.name.should.equal('MRedisMockError');
         err.message.should.equal('mock error');
         client.clients[1].del = _del;
         done();

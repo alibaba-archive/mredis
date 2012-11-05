@@ -138,8 +138,15 @@ describe('multi redis statbility test', function() {
     });
 
     it('should setCmd timeout', function(done) {
+      var _set = client.clients[0].set;
+      client.clients[0].set = function(id, cb) {
+        setTimeout(function() {
+          cb(null, 'ok');
+        }, 10);
+      }
       client.set('foo', 'bar', function(err, data) {
         err.message.should.equal('request timeout.');
+        client.clients[0].set = _set;
         done();
       });
     });
