@@ -2,6 +2,7 @@
 [`node_redis`](https://github.com/mranney/node_redis)模块，是现在最成熟的node redis驱动，但是在生产环境中使用它仍然会有几个问题。   
  1. 无法连接一个redis集群。进而在`redis`处产生严重的单点问题。   
  2. 没有超时控制。   
+
 `mredis`是一个在`node_redis`基础上封装的一层对多个redis实例进行管理的模块。通过`mredis`可以连接多个redis服务器，保证只要有任何一个redis服务仍然存活，依赖于mredis的系统就不会挂掉。   
  1. 支持连接多个redis服务，多写单读（写入的时候更新每一台服务器，读取的时候轮询或者从速度最快的服务器读取）。   
  2. 对管理的redis服务连接进行健康检测。将不正常的redis服务断开。   
