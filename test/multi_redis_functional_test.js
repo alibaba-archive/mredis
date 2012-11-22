@@ -131,7 +131,7 @@ describe('functional test', function() {
   })
   describe('#onEvent', function() {
     it('should emit error', function(done) {
-      client.on('error', function(err) {
+      client.on('redisError', function(client, err) {
         err.message.should.equal('test error');
         done();
       })

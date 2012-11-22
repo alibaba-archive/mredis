@@ -12,7 +12,7 @@ test: install-test
 	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
 		--reporter $(REPORTER) --timeout $(TESTTIMEOUT) $(TEST)
 
-test-cov:
+test-cov: install-test lib-cov
 	@MREDIS_COV=1 NODE_ENV=test ./node_modules/mocha/bin/mocha \
 		--reporter html-cov --timeout $(TESTTIMEOUT) $(TEST) > coverage.html
 
