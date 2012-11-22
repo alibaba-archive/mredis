@@ -1,6 +1,5 @@
 var should = require('should');
-require('./helper/ensure_require');
-var multiRedis = require('../lib/multi_redis');
+var multiRedis = require('../');
 var interceptor = require('interceptor');
 /**
  * be sure you have a redis server

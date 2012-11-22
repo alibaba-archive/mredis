@@ -1,1 +1,1 @@
-module.exports = require('./lib/multi_redis');
+module.exports = process.env.MERDIS_COV ? require('./lib-cov/multi_redis') : require('./lib/multi_redis');

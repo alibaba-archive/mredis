@@ -9,7 +9,7 @@
   	"mocha" : ">= 0.9.0",
   	"should" : ">= 0.4.2",
         "interceptor": ">=0.0.2",
-        "jscoverage": "*"
+        "jscover": "*"
   },
   "scripts" : {
   	"test" : "make test"
