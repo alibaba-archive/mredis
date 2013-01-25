@@ -67,7 +67,7 @@ describe('multi redis statbility test', function() {
     });
 
     it('should error of All server done', function(done) {
-      client.once('error', function(err) {
+      client.once('mredisError', function(err) {
         client.alive.should.equal(0);
         err.message.should.equal('All servers are down.');
         client.del('foo', function(err) {
