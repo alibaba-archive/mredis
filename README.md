@@ -33,7 +33,7 @@ var redis = medis.createClient({
 
 //then use it just like use redis.
 redis.auth("edp", function(err) {});
-redis.on("error", function(err){
+redis.on("mredisError", function(err){
   console.log("find error: ", err.message);
 });
 redis.on("end", function(client){
@@ -66,7 +66,8 @@ exports.getCmds = [
   'lindex', 'llen', 'lrange', 
   'scard', 'sdiff', 'sismember', 'smembers', 'srandmember', 'sunion', 
   'zcard', 'zcount', 'zrange', 'zrangebyscore', 'zrank', 'zrevrange', 'zrevrangebyscore', 'zrevrank', 'zscore',
-  'mget', 'exists', 'getbit', 'hget', 'hmget', 'info', 'hgetall'
+  'mget', 'exists', 'getbit', 'hget', 'hmget', 'info', 'hgetall',
+  'auth'
 ];
 
 /**
@@ -80,7 +81,7 @@ exports.setCmds = [
   'blpop', 'brpop', 'brpoplpush', 'linsert', 'lpop', 'lpush', 'lpushx', 'lrem', 'lset', 'ltrim', 'rpop', 'rpoplpush', 'rpushx', 'rpush',
   'sadd', 'sdiffstore', 'sinsert', 'smove', 'spop', 'srem', 'sunionstore', 
   'zadd', 'zincrby', 'zintersotre', 'zunionstore',
-  'select', 'auth', 'echo', 'ping', 'quit'
+  'select', 'echo', 'ping', 'quit'
 ];
 ```
 ### dependence   
