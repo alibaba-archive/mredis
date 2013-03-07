@@ -8,8 +8,9 @@
   "devDependencies": { 
   	"mocha" : ">= 0.9.0",
   	"should" : ">= 0.4.2",
-        "interceptor": ">=0.0.2",
-        "jscover": "*"
+    "interceptor": ">=0.0.2", 
+    "jscover": "*",
+    "mm": "*"
   },
   "scripts" : {
   	"test" : "make test"

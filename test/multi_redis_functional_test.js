@@ -1,6 +1,6 @@
 var multiRedis = require('../');
 var redis = require('redis');
-
+var mm = require('mm');
 /**
  * be sure you have a redis server
  */
@@ -9,7 +9,7 @@ var options = {
   host : ['127.0.0.1', '127.0.0.1'],
   port : [6379, 6379],
   debug : false
-}
+};
 describe('functional test', function() {
   describe('#createClient()', function(){
     it('should create redis client ok', function() {
@@ -35,7 +35,39 @@ describe('functional test', function() {
     it('should create redis client with host and port', function() {
       multiRedis.createClient(6379, '127.0.0.1').clients.should.have.length(1);
     });   
-  })
+  });
+
+  describe('#auth()', function () {
+    afterEach(mm.restore);
+    beforeEach(function () {
+      mm.data(client.clients[0], 'auth', 'ok');
+      mm.data(client.clients[1], 'auth', 'ok');
+    });
+
+    it('should auth ok when both ok', function (done) {
+      client.auth('test', done);
+    });
+
+    it('should auth ok when clints[0] return err', function (done) {
+      mm.error(client.clients[0], 'auth', 'mock error');
+      client.auth('test', done);
+    });
+
+    it('should auth ok when clints[0] timeout', function (done) {
+      mm(client, 'reqTimeout', 100);
+      mm.data(client.clients[0], 'auth', 'ok', 200);
+      client.auth('test', done);
+    });
+
+    it('should auth error when clients all error', function (done) {
+      mm.error(client.clients[0], 'auth', 'mock error');
+      mm.error(client.clients[1], 'auth', 'mock error');
+      client.auth('test', function (err) {
+        err.message.should.equal('mock error');
+        done();
+      });
+    });
+  });
 
   describe('#set()', function() {
     it('should set ok', function(done){
