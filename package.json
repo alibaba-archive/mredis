@@ -9,11 +9,14 @@
   	"mocha" : ">= 0.9.0",
   	"should" : ">= 0.4.2",
     "interceptor": ">=0.0.2", 
-    "jscover": "*",
+    "blanket": "1.1.4",
     "mm": "*"
   },
   "scripts" : {
-  	"test" : "make test"
+  	"test" : "make test",
+    "blanket": {
+      "pattern": "multi_redis/lib"
+    }
   },
   "repository": {
     "type": "git",

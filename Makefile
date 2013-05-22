@@ -12,16 +12,11 @@ test: install-test
 	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
 		--reporter $(REPORTER) --timeout $(TESTTIMEOUT) $(TEST)
 
-test-cov: install-test lib-cov
-	@MREDIS_COV=1 NODE_ENV=test ./node_modules/mocha/bin/mocha \
-		--reporter html-cov --timeout $(TESTTIMEOUT) $(TEST) > coverage.html
-
-lib-cov:
-	@rm -rf $@
-	@$(JSCOVER) lib $@
+test-cov: install-test
+	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
+		--reporter html-cov --require blanket --timeout $(TESTTIMEOUT) $(TEST) > coverage.html 
 
 clean:
-	@rm -rf *-cov
 	@rm -f coverage.html
 
 .PHONY: test test-cov clean install install-test
