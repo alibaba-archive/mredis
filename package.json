@@ -1,8 +1,9 @@
 {
   "name" : "mredis",
   "description" : "管理多个redis服务，消除redis服务的单点问题，并提供调用超时控制",
-  "version" : "1.2.1",
-  "author" : "dead_horse <busi.hyy@taobao.com>",
+  "version" : "1.2.2",
+  "author" : "dead_horse <dead_horse@qq.com>",
+  "maintainers": ["dead_horse <dead_horse@qq.com>", "fengmk2 fengmk2@gmail.com"],
   "main" : "./index.js",
   "dependencies" : {"redis" : ">= 0.8.1"},
   "devDependencies": { 
