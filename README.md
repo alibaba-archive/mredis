@@ -1,5 +1,10 @@
-## Muilt Redis![travis-ci](https://secure.travis-ci.org/dead-horse/multi_redis.png) 
+## Muilt Redis
+
+![travis-ci](https://secure.travis-ci.org/dead-horse/multi_redis.png) 
+
 [`node_redis`](https://github.com/mranney/node_redis)模块，是现在最成熟的node redis驱动，但是在生产环境中使用它仍然会有几个问题。   
+
+___年久失修，用于生产环境请先验证和现有 redis 的兼容性___
 
  1. 无法连接一个redis集群。进而在`redis`处产生严重的单点问题。   
  2. 没有超时控制。   
